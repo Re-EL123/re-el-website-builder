@@ -1,69 +1,49 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Title| slogan</title>
-    <meta name="description" content="">
-    <meta name="author" content="" />
-    <meta name="keywords" content="" />
-    <link rel="canonical" href="domain here" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="">
-    <meta property="og:description" content="">
-    <meta property="og:url" content="" />
-    <meta property="og:image" content="" />
+  <title id="page-title">Title | Slogan</title>
+  <meta name="description" id="page-description" content="">
+  <meta name="author" content="Re-EL Digital Agency">
+  <meta name="keywords" id="page-keywords" content="">
+  <link rel="canonical" id="page-canonical" href="">
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="">
-    <meta name="twitter:description" content="">
-    <meta name="twitter:image" content="" />
-    
-    <link rel="icon" type="image/png" href="">
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "",
-      "description": "",
-      "url": "domain here",
-      "logo": "link here",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+27-81-386-4024",
-        "contactType": "customer service",
-        "areaServed": "ZA"
-      },
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "South Africa"
-      }
-    }
-    </script>
-  </head>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <header>
-    <div id="header">
-      Run header from header.html here
-    </div> 
-  </header>
-  <body>
-    <div id="header">
-      Run body from file here , eg main.html, about.html, services.html, contact.html. Thiss will be according to the user, they wil be able to create a new section from the gui, javascript will take file name and name it with .html and javascript will decide
-      the file that will be runnung in section, when the user clicks a button that redirects to a file in the project
-      it will go with the endpoint to load in this section
-    </div> 
-  </body>
-  <footer>
-    <div id="header">
-      Run footer from footer.html here
-    </div> 
-    
-  </footer>
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" id="og-title">
+  <meta property="og:description" id="og-description">
+  <meta property="og:url" id="og-url">
+  <meta property="og:image" id="og-image">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twitter-title">
+  <meta name="twitter:description" id="twitter-description">
+  <meta name="twitter:image" id="twitter-image">
+
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" id="schema-data"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <header id="site-header"></header>
+
+  <main id="site-content"></main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/router.js"></script>
+  <script src="js/seo.js"></script>
+</body>
 </html>
