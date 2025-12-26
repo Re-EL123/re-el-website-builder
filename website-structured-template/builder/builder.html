@@ -1,8 +1,311 @@
-<h2>Create New Page</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Re-EL Website Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<input type="text" id="pageName" placeholder="Page name (e.g services)">
-<textarea id="pageContent" placeholder="HTML content"></textarea>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-<button onclick="createPage()">Create Page</button>
+  <style>
+    :root {
+      --primary:#0b3cff;
+      --dark:#0f172a;
+      --light:#f8fafc;
+      --border:#e5e7eb;
+    }
 
-<script src="builder.js"></script>
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      font-family:Poppins,sans-serif;
+      background:var(--light);
+      color:#334155;
+      display:grid;
+      grid-template-columns:280px 1fr 320px;
+      height:100vh;
+    }
+
+    /* LEFT PANEL */
+    aside {
+      background:#fff;
+      border-right:1px solid var(--border);
+      padding:1.2rem;
+      overflow:auto;
+    }
+
+    aside h3 {
+      font-family:Montserrat;
+      margin-top:0;
+    }
+
+    .block {
+      background:#f1f5f9;
+      padding:0.8rem;
+      border-radius:10px;
+      margin-bottom:0.6rem;
+      cursor:grab;
+      font-weight:600;
+    }
+
+    /* CENTER CANVAS */
+    main {
+      padding:2rem;
+      overflow:auto;
+    }
+
+    #canvas {
+      min-height:100%;
+      border:2px dashed #cbd5e1;
+      padding:2rem;
+      border-radius:14px;
+      background:#fff;
+    }
+
+    section {
+      padding:4rem 2rem;
+      margin-bottom:2rem;
+      border-radius:16px;
+    }
+
+    .hero {
+      background:linear-gradient(135deg,#0b3cff,#0029cc);
+      color:#fff;
+    }
+
+    .cta {
+      background:#0b3cff;
+      color:#fff;
+      text-align:center;
+    }
+
+    /* RIGHT PANEL */
+    .settings {
+      background:#fff;
+      border-left:1px solid var(--border);
+      padding:1.2rem;
+      overflow:auto;
+    }
+
+    .settings input,
+    .settings textarea {
+      width:100%;
+      padding:0.6rem;
+      margin-bottom:0.8rem;
+      border-radius:8px;
+      border:1px solid var(--border);
+      font-family:inherit;
+    }
+
+    button {
+      padding:0.7rem 1.2rem;
+      border-radius:10px;
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+      width:100%;
+      margin-top:0.6rem;
+    }
+
+    button.secondary {
+      background:#111827;
+    }
+
+    small {
+      display:block;
+      margin-top:0.4rem;
+      color:#64748b;
+    }
+
+    [contenteditable] {
+      outline:none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- COMPONENTS -->
+  <aside>
+    <h3>Sections</h3>
+    <div class="block" draggable="true" data-type="hero">Hero</div>
+    <div class="block" draggable="true" data-type="text">Text</div>
+    <div class="block" draggable="true" data-type="cta">CTA</div>
+  </aside>
+
+  <!-- CANVAS -->
+  <main>
+    <div id="canvas"></div>
+  </main>
+
+  <!-- SETTINGS -->
+  <div class="settings">
+    <h3>Project Settings</h3>
+
+    <input id="projectName" placeholder="Project name">
+    <textarea id="projectDescription" placeholder="Project description"></textarea>
+    <input id="projectSlug" placeholder="site-name">
+
+    <small>Autosaved locally</small>
+
+    <hr>
+
+    <h3>Publish</h3>
+    <input id="customDomain" placeholder="Custom domain (optional)">
+    <button onclick="publish()">Publish Website</button>
+    <button class="secondary" onclick="downloadHTML()">Download main.html</button>
+  </div>
+
+<script>
+/* =====================
+   PROJECT STATE
+===================== */
+let project = JSON.parse(localStorage.getItem("reelProject")) || {
+  name:"",
+  description:"",
+  slug:"",
+  pages:{ main:[] }
+};
+
+/* =====================
+   DRAG & DROP
+===================== */
+const canvas = document.getElementById("canvas");
+
+document.querySelectorAll(".block").forEach(b=>{
+  b.addEventListener("dragstart",e=>{
+    e.dataTransfer.setData("type",b.dataset.type);
+  });
+});
+
+canvas.addEventListener("dragover",e=>e.preventDefault());
+
+canvas.addEventListener("drop",e=>{
+  e.preventDefault();
+  const type = e.dataTransfer.getData("type");
+
+  const section = {
+    type,
+    content:{
+      heading:"Edit heading",
+      text:"Edit text",
+      cta:"Get Started"
+    }
+  };
+
+  project.pages.main.push(section);
+  render();
+  save();
+});
+
+/* =====================
+   RENDER
+===================== */
+function render(){
+  canvas.innerHTML="";
+  project.pages.main.forEach((s,i)=>{
+    if(s.type==="hero"){
+      canvas.innerHTML+=`
+        <section class="hero">
+          <h1 contenteditable oninput="edit(${i},'heading',this.innerText)">${s.content.heading}</h1>
+          <p contenteditable oninput="edit(${i},'text',this.innerText)">${s.content.text}</p>
+        </section>`;
+    }
+
+    if(s.type==="text"){
+      canvas.innerHTML+=`
+        <section>
+          <h2 contenteditable oninput="edit(${i},'heading',this.innerText)">${s.content.heading}</h2>
+          <p contenteditable oninput="edit(${i},'text',this.innerText)">${s.content.text}</p>
+        </section>`;
+    }
+
+    if(s.type==="cta"){
+      canvas.innerHTML+=`
+        <section class="cta">
+          <h2 contenteditable oninput="edit(${i},'heading',this.innerText)">${s.content.heading}</h2>
+          <p contenteditable oninput="edit(${i},'text',this.innerText)">${s.content.text}</p>
+          <button>${s.content.cta}</button>
+        </section>`;
+    }
+  });
+}
+
+/* =====================
+   EDIT & SAVE
+===================== */
+function edit(i,key,val){
+  project.pages.main[i].content[key]=val;
+  save();
+}
+
+function save(){
+  project.name = projectName.value;
+  project.description = projectDescription.value;
+  project.slug = projectSlug.value;
+  localStorage.setItem("reelProject",JSON.stringify(project));
+}
+
+/* =====================
+   AUTOSAVE
+===================== */
+setInterval(save,4000);
+
+/* =====================
+   PUBLISH
+===================== */
+function publish(){
+  const domain = customDomain.value || `${project.slug}.re-el.site`;
+  alert("Published to https://"+domain);
+  downloadHTML();
+}
+
+/* =====================
+   EXPORT HTML
+===================== */
+function downloadHTML(){
+  let html="";
+  project.pages.main.forEach(s=>{
+    if(s.type==="hero"){
+      html+=`
+<section class="hero">
+  <h1>${s.content.heading}</h1>
+  <p>${s.content.text}</p>
+</section>`;
+    }
+    if(s.type==="text"){
+      html+=`
+<section>
+  <h2>${s.content.heading}</h2>
+  <p>${s.content.text}</p>
+</section>`;
+    }
+    if(s.type==="cta"){
+      html+=`
+<section class="cta">
+  <h2>${s.content.heading}</h2>
+  <p>${s.content.text}</p>
+  <a href="?page=contact" class="btn primary">${s.content.cta}</a>
+</section>`;
+    }
+  });
+
+  const blob=new Blob([html],{type:"text/html"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="main.html";
+  a.click();
+}
+
+/* INIT */
+projectName.value=project.name;
+projectDescription.value=project.description;
+projectSlug.value=project.slug;
+render();
+</script>
+
+</body>
+</html>
